@@ -2,6 +2,7 @@ import { createRootRoute, Link, Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 import Header from '../components/header';
 import './root.css';
+import { IconBuildingWarehouse, IconHelpHexagon, IconHome2, IconLeaf2, IconTerminal2, IconUserSquareRounded } from '@tabler/icons-react';
 
 export const Route = createRootRoute({
   component: () => (
@@ -11,32 +12,38 @@ export const Route = createRootRoute({
         menu={[
           {
             title: 'Home',
-            icon: 'IconHome2',
+            icon: <IconHome2 color="#000" />,
             link: '/',
             child: null,
           },
           {
-            title: 'Mechanical',
-            icon: 'IconHome2',
-            link: '/mechanical',
-            child: null,
-          },
-          {
             title: 'Agronomist',
-            icon: 'IconHome2',
+            icon: <IconLeaf2 color="#000" />,
             link: '/agronomist',
             child: null,
           },
           {
-            title: 'Plumber',
-            icon: 'IconHome2',
-            link: '/plumber',
+            title: 'Warehouse',
+            icon: <IconBuildingWarehouse color="#000" />,
+            link: '/warehouse',
             child: null,
           },
           {
-            title: 'Electrical & Software',
-            icon: 'IconHome2',
+            title: 'Hardware & Software',
+            icon: <IconTerminal2 color="#000" />,
             link: '/software',
+            child: null,
+          },
+          {
+            title: 'Employees',
+            icon: <IconUserSquareRounded color="#000" />,
+            link: '/software',
+            child: null,
+          },
+          {
+            title: 'FAQ',
+            icon: <IconHelpHexagon color="#000" />,
+            link: '/faq',
             child: null,
           },
           // {

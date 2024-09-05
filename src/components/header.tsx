@@ -150,7 +150,7 @@ const header: React.FC<HeaderProps> = ({ menu }) => {
                             className="[&.active]:font-bold nav-link Navbar_nav-link"
                           >
                             <span className="nav-link-icon Navbar_icon d-md-none d-lg-inline-block">
-                              <IconHome2 color="#777" />
+                              {item.icon || <IconHome2 color="#777" />}
                             </span>
                             <span className="nav-link-title Navbar_title">{item.title}</span>
                           </Link>

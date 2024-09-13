@@ -178,6 +178,18 @@ function Devices() {
     setNewTool({ ...newTool, components: updatedComponents });
   };
 
+  const handleDeleteComponentRow = (index, toolToUpdate) => {
+    const updatedComponents = [
+      ...(toolToUpdate ? selectedTool.components : newTool.components),
+    ];
+    updatedComponents.splice(index, 1);
+    if (toolToUpdate) {
+      setSelectedTool({ ...selectedTool, components: updatedComponents });
+    } else {
+      setNewTool({ ...newTool, components: updatedComponents });
+    }
+  };
+
   return (
     <div className="container">
       <h1 className="mt-4">Menu Devices</h1>
@@ -247,6 +259,7 @@ function Devices() {
                 <th>Quantity</th>
                 <th>Stok</th>
                 <th>Deskripsi</th>
+                {isEditing && <th>Actions</th>}
               </tr>
             </thead>
             <tbody>
@@ -328,6 +341,16 @@ function Devices() {
                       component.description
                     )}
                   </td>
+                  {isEditing && (
+                    <td>
+                      <button
+                        className="btn btn-danger"
+                        onClick={() => handleDeleteComponentRow(index, true)}
+                      >
+                        Delete Component
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
@@ -343,6 +366,12 @@ function Devices() {
               </button>
               <button className="btn btn-primary" onClick={handleSaveEdit}>
                 Save Changes
+              </button>
+              <button
+                className="btn btn-secondary ms-2"
+                onClick={() => setIsEditing(false)}
+              >
+                Cancel
               </button>
             </>
           )}
@@ -406,6 +435,7 @@ function Devices() {
                 <th>Quantity</th>
                 <th>Stock</th>
                 <th>Description</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -459,6 +489,14 @@ function Devices() {
                       }
                     />
                   </td>
+                  <td>
+                    <button
+                      className="btn btn-danger"
+                      onClick={() => handleDeleteComponentRow(index, false)}
+                    >
+                      Delete Component
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -479,7 +517,7 @@ function Devices() {
               type="file"
               className="form-control"
               id="newExcelFile"
-              onChange={handleExcelFile}
+              onChange={(e) => handleExcelFile(e)}
             />
           </div>
 

@@ -7,10 +7,10 @@ import * as XLSX from "xlsx"; // Import XLSX for reading Excel files
 const API_URL = "http://localhost:3000/api/tools";
 
 export const Route = createLazyFileRoute("/devices")({
-  component: Software,
+  component: Devices,
 });
 
-function Software() {
+function Devices() {
   const [tools, setTools] = useState([]);
   const [selectedTool, setSelectedTool] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -51,7 +51,7 @@ function Software() {
   };
 
   // Handler for reading Excel file and converting to JSON
-  const handleExcelFile = async (e) => {
+  const handleExcelFile = async (e, toolToUpdate) => {
     const file = e.target.files[0];
     const reader = new FileReader();
 
@@ -62,7 +62,6 @@ function Software() {
       const worksheet = workbook.Sheets[firstSheetName];
       const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
-      // Process JSON data here (format: [{Nama Komponen, Quantity, Stock, Deskripsi}])
       const components = jsonData.map((item) => ({
         name: item["Nama Komponen"],
         quantity: item["Quantity"],
@@ -70,17 +69,26 @@ function Software() {
         description: item["Deskripsi"],
       }));
 
-      setNewTool({
-        ...newTool,
-        components: components, // Set the components from Excel data
-      });
+      if (toolToUpdate) {
+        // Editing mode, add components to selected tool
+        setSelectedTool({
+          ...selectedTool,
+          components: [...selectedTool.components, ...components],
+        });
+      } else {
+        // Creating a new tool, add components to new tool state
+        setNewTool({
+          ...newTool,
+          components: [...newTool.components, ...components],
+        });
+      }
     };
 
     reader.readAsArrayBuffer(file);
   };
 
   const handleToolClick = (tool) => {
-    navigate(`/software#${tool.name}`);
+    navigate(`/devices#${tool.name}`);
     setSelectedTool(tool);
     setShowActions(true);
   };
@@ -127,7 +135,7 @@ function Software() {
   };
 
   const handleBackClick = () => {
-    navigate("/software");
+    navigate("/devices");
     setSelectedTool(null);
     setShowActions(false);
   };
@@ -173,10 +181,9 @@ function Software() {
   return (
     <div className="container">
       <h1 className="mt-4">Menu Devices</h1>
-
       <div className="d-flex justify-content-end mb-4">
         <button className="btn btn-primary" onClick={handleAddNewTool}>
-          Add New Tool
+          Add New Devices
         </button>
       </div>
 
@@ -203,10 +210,10 @@ function Software() {
 
       {selectedTool && (
         <div className="mt-4">
-          <h2>Details for {selectedTool.name}</h2>
           <button className="btn btn-secondary mb-4" onClick={handleBackClick}>
-            Back to All Tools
+            Back to All Devices
           </button>
+          <h2>Details for {selectedTool.name}</h2>
 
           <div className="d-flex justify-content-between">
             <img
@@ -244,7 +251,19 @@ function Software() {
             </thead>
             <tbody>
               {selectedTool.components.map((component, index) => (
-                <tr key={index}>
+                <tr
+                  key={index}
+                  style={{
+                    backgroundColor:
+                      component.stock >= component.quantity
+                        ? "#D4EDDA"
+                        : "#F8D7DA", // Light green or light red background
+                    color:
+                      component.stock >= component.quantity
+                        ? "#155724"
+                        : "#721C24",
+                  }}
+                >
                   <td>
                     {isEditing ? (
                       <input
@@ -313,38 +332,48 @@ function Software() {
               ))}
             </tbody>
           </table>
+
           {isEditing && (
-            <div className="mb-4">
+            <>
               <button
-                className="btn btn-secondary me-2"
+                className="btn btn-success me-2"
                 onClick={handleAddComponentRow}
               >
-                Add Component
+                Add New Component
               </button>
-              <div className="d-flex justify-content-end">
-                <button
-                  className="btn btn-primary me-2"
-                  onClick={handleSaveEdit}
-                >
-                  Save Changes
-                </button>
-                <button
-                  className="btn btn-secondary"
-                  onClick={() => setIsEditing(false)}
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
+              <button className="btn btn-primary" onClick={handleSaveEdit}>
+                Save Changes
+              </button>
+            </>
           )}
+
+          <div className="mt-4">
+            <label htmlFor="excelFile" className="form-label">
+              Import Excel File for Components:
+            </label>
+            <input
+              type="file"
+              className="form-control"
+              id="excelFile"
+              onChange={(e) => handleExcelFile(e, selectedTool)}
+            />
+          </div>
         </div>
       )}
 
       {showForm && (
         <div className="mt-4">
-          <h2>Add New Tool</h2>
-          <div className="form-group">
-            <label htmlFor="toolName">Tool Name</label>
+          <h2>Add New Device</h2>
+          <button
+            className="btn btn-secondary mb-4"
+            onClick={() => setShowForm(false)}
+          >
+            Cancel
+          </button>
+          <div className="mb-3">
+            <label htmlFor="toolName" className="form-label">
+              Device Name:
+            </label>
             <input
               type="text"
               className="form-control"
@@ -353,8 +382,11 @@ function Software() {
               onChange={(e) => setNewTool({ ...newTool, name: e.target.value })}
             />
           </div>
-          <div className="form-group">
-            <label htmlFor="toolImage">Tool Image URL</label>
+
+          <div className="mb-3">
+            <label htmlFor="toolImage" className="form-label">
+              Image URL:
+            </label>
             <input
               type="text"
               className="form-control"
@@ -366,14 +398,14 @@ function Software() {
             />
           </div>
 
-          <h3 className="mt-4">Komponen</h3>
+          <h3>Components</h3>
           <table className="table table-bordered">
             <thead>
               <tr>
-                <th>Nama Komponen</th>
+                <th>Component Name</th>
                 <th>Quantity</th>
-                <th>Stok</th>
-                <th>Deskripsi</th>
+                <th>Stock</th>
+                <th>Description</th>
               </tr>
             </thead>
             <tbody>
@@ -432,43 +464,32 @@ function Software() {
             </tbody>
           </table>
 
-          {/* Input for uploading Excel file */}
-          <div className="form-group mt-3">
-            <label htmlFor="excelFile">Upload Excel File for Components</label>
+          <button
+            className="btn btn-success me-2"
+            onClick={handleAddNewComponent}
+          >
+            Add New Component
+          </button>
+
+          <div className="mt-4">
+            <label htmlFor="newExcelFile" className="form-label">
+              Import Excel File for Components:
+            </label>
             <input
               type="file"
               className="form-control"
-              id="excelFile"
-              accept=".xlsx, .xls"
-              onChange={handleExcelFile} // Function to handle Excel file upload
+              id="newExcelFile"
+              onChange={handleExcelFile}
             />
           </div>
 
-          <button
-            className="btn btn-secondary mb-3"
-            onClick={handleAddNewComponent}
-          >
-            Add Component
+          <button className="btn btn-primary mt-4" onClick={handleSaveNewTool}>
+            Save Device
           </button>
-
-          <div className="d-flex justify-content-end">
-            <button
-              className="btn btn-primary me-2"
-              onClick={handleSaveNewTool}
-            >
-              Save New Tool
-            </button>
-            <button
-              className="btn btn-secondary"
-              onClick={() => setShowForm(false)}
-            >
-              Cancel
-            </button>
-          </div>
         </div>
       )}
     </div>
   );
 }
 
-export default Software;
+export default Devices;

@@ -1,8 +1,15 @@
-import { createRootRoute, Link, Outlet } from '@tanstack/react-router';
-import { TanStackRouterDevtools } from '@tanstack/router-devtools';
-import Header from '../components/header';
-import './root.css';
-import { IconBuildingWarehouse, IconHelpHexagon, IconHome2, IconLeaf2, IconTerminal2, IconUserSquareRounded } from '@tabler/icons-react';
+import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
+import { TanStackRouterDevtools } from "@tanstack/router-devtools";
+import Header from "../components/header";
+import "./root.css";
+import {
+  IconBuildingWarehouse,
+  IconHelpHexagon,
+  IconHome2,
+  IconLeaf2,
+  IconTerminal2,
+  IconUserSquareRounded,
+} from "@tabler/icons-react";
 
 export const Route = createRootRoute({
   component: () => (
@@ -11,39 +18,45 @@ export const Route = createRootRoute({
       <Header
         menu={[
           {
-            title: 'Home',
+            title: "Home",
             icon: <IconHome2 color="#000" />,
-            link: '/',
+            link: "/",
             child: null,
           },
           {
-            title: 'Agronomist',
+            title: "Agronomist",
             icon: <IconLeaf2 color="#000" />,
-            link: '/agronomist',
+            link: "/agronomist",
             child: null,
           },
           {
-            title: 'Warehouse',
+            title: "Warehouse",
             icon: <IconBuildingWarehouse color="#000" />,
-            link: '/warehouse',
+            link: "/warehouse",
             child: null,
           },
           {
-            title: 'Hardware & Software',
+            title: "Hardware & Software",
             icon: <IconTerminal2 color="#000" />,
-            link: '/software',
+            link: "/software",
             child: null,
           },
           {
-            title: 'Employees',
+            title: "Devices",
+            icon: <IconTerminal2 color="#000" />,
+            link: "/devices",
+            child: null,
+          },
+          {
+            title: "Employees",
             icon: <IconUserSquareRounded color="#000" />,
-            link: '/software',
+            link: "/software",
             child: null,
           },
           {
-            title: 'FAQ',
+            title: "FAQ",
             icon: <IconHelpHexagon color="#000" />,
-            link: '/faq',
+            link: "/faq",
             child: null,
           },
           // {
